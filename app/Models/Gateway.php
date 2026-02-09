@@ -61,6 +61,7 @@ class Gateway extends Model
         'woovi_uri',
         'woovi_client_id',
         'woovi_client_secret',
+        'woovi_webhook_secret',
 
     ];
 
@@ -120,6 +121,16 @@ class Gateway extends Model
      * Woovi Client Secret - oculta em DEMO (NOVO)
      */
     protected function wooviClientSecret(): Attribute
+    {
+        return Attribute::make(
+            get: fn(?string $value) => env('APP_DEMO') ? '*********************' : $value,
+        );
+    }
+
+    /**
+     * Woovi Webhook Secret - oculta em DEMO
+     */
+    protected function wooviWebhookSecret(): Attribute
     {
         return Attribute::make(
             get: fn(?string $value) => env('APP_DEMO') ? '*********************' : $value,

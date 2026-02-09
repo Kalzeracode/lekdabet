@@ -189,21 +189,26 @@ class GatewayPage extends Page
                             ->schema([
                                 TextInput::make('woovi_uri')
                                     ->label('CLIENTE URL')
-                                    ->placeholder('Digite a url da api (ex: https://api.woovi.com/)')
+                                    ->placeholder('Digite a URL base (ex: https://api.openpix.com.br/)')
                                     ->maxLength(255)
                                     ->columnSpanFull(),
                                 TextInput::make('woovi_client_id')
-                                    ->label('CLIENTE ID (App ID)')
-                                    ->placeholder('Digite o client ID')
+                                    ->label('APP ID / TOKEN DA API')
+                                    ->placeholder('Cole o token da Woovi (Authorization)')
                                     ->maxLength(255)
+                                    ->helperText('Aceita token pronto (base64) ou AppID. Se usar AppID, preencha o Client Secret abaixo.')
                                     ->columnSpanFull(),
                                 TextInput::make('woovi_client_secret')
                                     ->label('CLIENTE SECRETO')
-                                    ->placeholder('Digite o client secret')
+                                    ->placeholder('Opcional quando usar token pronto')
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
+                                TextInput::make('woovi_webhook_secret')
+                                    ->label('WEBHOOK SECRET (X-OpenPix-Signature)')
+                                    ->placeholder('Cole a chave HMAC do webhook')
                                     ->maxLength(255)
                                     ->columnSpanFull(),
                             ]),
-                        
                         Section::make('EZZEPAY | ESTA ATUALMENTE SENDO INVESTIGADA')
                             ->description(new HtmlString('
                         <b>Seu Webhook:  ' . url("/ezzepay/webhook", [], true) . "</b>"))

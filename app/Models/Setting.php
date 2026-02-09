@@ -66,6 +66,7 @@ class Setting extends Model
         'digito_is_enable',
         'ondapay_is_enable',
         'ezzepay_is_enable',
+        'woovi_is_enable',
 
         'stripe_is_enable',
         'bspay_is_enable',

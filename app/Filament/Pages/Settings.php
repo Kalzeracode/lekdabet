@@ -190,6 +190,9 @@ class Settings extends Page implements HasForms
                         Toggle::make('bspay_is_enable')
                             ->label('BsPay Ativo')
                         ,
+                        Toggle::make('woovi_is_enable')
+                            ->label('Woovi Ativo')
+                        ,
                     ])->columns(4),
             ])
             ->statePath('data');

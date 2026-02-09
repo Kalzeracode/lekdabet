@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Wallet;
 
+use App\Helpers\Core;
 use App\Http\Controllers\Controller;
 use App\Models\Deposit;
 use App\Models\Transaction;
@@ -12,7 +13,6 @@ use App\Traits\Gateways\OndaPayTrait;
 use App\Traits\Gateways\SuitpayTrait;
 use App\Traits\Gateways\WooviTrait; // ← NOVO
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class DepositController extends Controller
 {
@@ -24,7 +24,27 @@ class DepositController extends Controller
      */
     public function submitPayment(Request $request)
     {
-        switch ($request->gateway) {
+        $gateway = (string) $request->input('gateway', '');
+
+        if ($gateway === '') {
+            $setting = Core::getSetting();
+
+            if ((int) ($setting->woovi_is_enable ?? 0) === 1) {
+                $gateway = 'woovi';
+            } elseif ((int) ($setting->ondapay_is_enable ?? 0) === 1) {
+                $gateway = 'ondapay';
+            } elseif ((int) ($setting->ezzepay_is_enable ?? 0) === 1) {
+                $gateway = 'ezzepay';
+            } elseif ((int) ($setting->digito_is_enable ?? 0) === 1) {
+                $gateway = 'digitopay';
+            } elseif ((int) ($setting->bspay_is_enable ?? 0) === 1) {
+                $gateway = 'bspay';
+            } elseif ((int) ($setting->suitpay_is_enable ?? 0) === 1) {
+                $gateway = 'suitpay';
+            }
+        }
+
+        switch ($gateway) {
             case 'suitpay':
                 return self::requestQrcode($request);
             case 'ezzepay':
@@ -38,6 +58,10 @@ class DepositController extends Controller
             case 'woovi': // ← NOVO
                 return self::requestQrcodeWoovi($request);
         }
+
+        return response()->json([
+            'error' => 'Gateway de pagamento não configurado.',
+        ], 400);
     }
 
     /**

@@ -24,10 +24,13 @@ class WooviController extends Controller
      */
     public function callbackMethod(Request $request)
     {
-        $data = $request->all();
-        DB::table('debug')->insert(['text' => json_encode($request->all())]);
+        try {
+            DB::table('debug')->insert(['text' => json_encode($request->all())]);
+        } catch (\Throwable $e) {
+            // Avoid breaking production webhook if debug table does not exist.
+        }
 
-        self::webhookWoovi($request);
+        return self::webhookWoovi($request);
     }
 
     /**
