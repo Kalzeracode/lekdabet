@@ -138,7 +138,11 @@ trait WooviTrait
         $lastResponse = null;
 
         foreach (array_values(array_unique($candidates)) as $url) {
-            $response = Http::withHeaders(self::wooviHeaders())->post($url, $payload);
+            $response = Http::withOptions([
+                // Woovi currently authorizes this account by IPv4; IPv6 from VPS is rejected.
+                'force_ip_resolve' => 'v4',
+                'timeout' => 20,
+            ])->withHeaders(self::wooviHeaders())->post($url, $payload);
             $lastResponse = $response;
 
             Log::info('Woovi request result', [
