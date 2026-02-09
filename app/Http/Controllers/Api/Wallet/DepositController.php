@@ -24,23 +24,24 @@ class DepositController extends Controller
      */
     public function submitPayment(Request $request)
     {
-        $gateway = (string) $request->input('gateway', '');
+        $setting = Core::getSetting();
+        $gateway = strtolower(trim((string) $request->input('gateway', '')));
 
-        if ($gateway === '') {
-            $setting = Core::getSetting();
+        $enabledGateways = [
+            'woovi' => (int) ($setting->woovi_is_enable ?? 0) === 1,
+            'ondapay' => (int) ($setting->ondapay_is_enable ?? 0) === 1,
+            'ezzepay' => (int) ($setting->ezzepay_is_enable ?? 0) === 1,
+            'digitopay' => (int) ($setting->digito_is_enable ?? 0) === 1,
+            'bspay' => (int) ($setting->bspay_is_enable ?? 0) === 1,
+            'suitpay' => (int) ($setting->suitpay_is_enable ?? 0) === 1,
+        ];
 
-            if ((int) ($setting->woovi_is_enable ?? 0) === 1) {
-                $gateway = 'woovi';
-            } elseif ((int) ($setting->ondapay_is_enable ?? 0) === 1) {
-                $gateway = 'ondapay';
-            } elseif ((int) ($setting->ezzepay_is_enable ?? 0) === 1) {
-                $gateway = 'ezzepay';
-            } elseif ((int) ($setting->digito_is_enable ?? 0) === 1) {
-                $gateway = 'digitopay';
-            } elseif ((int) ($setting->bspay_is_enable ?? 0) === 1) {
-                $gateway = 'bspay';
-            } elseif ((int) ($setting->suitpay_is_enable ?? 0) === 1) {
-                $gateway = 'suitpay';
+        if ($gateway === '' || !($enabledGateways[$gateway] ?? false)) {
+            foreach (['woovi', 'ondapay', 'ezzepay', 'digitopay', 'bspay', 'suitpay'] as $candidate) {
+                if ($enabledGateways[$candidate] ?? false) {
+                    $gateway = $candidate;
+                    break;
+                }
             }
         }
 
